@@ -1,53 +1,40 @@
 import os
+from dotenv import load_dotenv
+from src.analysis_engine import run_agent_team
 from src.ocr_engine import extract_text_from_receipt
 from src.extractor import extract_structured_data
 
+load_dotenv()
+
+
 def main():
-    # 1. Define where your image is
-    # Make sure you put a file named 'test_receipt.jpg' inside the 'data' folder!
-    image_name = "test_receipt.jpg"
-    image_path = os.path.join("data", image_name)
+    image_path = os.path.join("data", "test_receipt.jpg")
     
-    # 2. Check if file exists before running
     if not os.path.exists(image_path):
-        print(f"❌ Error: Please put a receipt image named '{image_name}' in the 'data' folder.")
+        print("❌ Image not found.")
         return
 
-    # 3. Run the OCR Module
-    print("--- Starting OCR Process ---")
-    extracted_text = extract_text_from_receipt(image_path)
+    # --- Phase 1: OCR ---
+    print("--- 1. OCR Scanning ---")
+    raw_text = extract_text_from_receipt(image_path)
+    if not raw_text: return
 
-    """
-    # 4. Output the result
-    print("\n" + "="*30)
-    print("     RAW TEXT RESULT     ")
-    print("="*30)
-    print(extracted_text)
-    print("="*30)
-    """
+    # --- Phase 2: Structure ---
+    print("--- 2. Structuring Data (Groq) ---")
+    receipt_data = extract_structured_data(raw_text)
+    if not receipt_data: return
 
-    print(f"✅ OCR Complete ({len(extracted_text)} chars found)")
-    print("--- 2. Sending to DeepSeek for Structuring ---")
-    receipt_data = extract_structured_data(extracted_text)
-    if receipt_data:
-        print("\n" + "="*40)
-        print("🧾  FINAL PROCESSED RECEIPT")
-        print("="*40)
-        print(f"🏪 Merchant:  {receipt_data.merchant}")
-        print(f"📅 Date:      {receipt_data.date}")
-        print(f"💵 Total:     {receipt_data.total} {receipt_data.currency}")
-        print(f"🏷️  Category:  {receipt_data.category}")
-        print(f"🛒 Items:     {len(receipt_data.items)} found")
-        
-        print("\nItem Details:")
-        for item in receipt_data.items:
-            # Handle cases where price might be None
-            price = f"{item.price:.2f}" if item.price else "N/A"
-            print(f"  - {item.name:<20} {price}")
-        print("="*40)
-    else:
-        print("❌ DeepSeek failed to structure the data.")
+    # --- Phase 3: Supportive Analysis ---
+    print("\n--- 3. Financial Insight ---")
+    
+    # Note: We now pass the 'receipt_data' object directly
+    final_report = run_agent_team(receipt_data)
 
-
+    print("\n" + "="*50)
+    print("     📊 SMART RECEIPT INSIGHT")
+    print("="*50)
+    print(final_report)
+    print("="*50)
+    
 if __name__ == "__main__":
     main()

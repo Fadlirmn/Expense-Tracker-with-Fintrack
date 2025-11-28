@@ -1,3 +1,7 @@
 pytesseract
 opencv-python
 pillow
+langchain 
+langchain-groq 
+pydantic 
+python-dotenv

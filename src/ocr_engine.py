@@ -1,6 +1,5 @@
 import cv2
 import pytesseract
-from PIL import Image
 
 # --- CONFIGURATION (WINDOWS ONLY) ---
 # If you are on Windows, you must tell Python where Tesseract is installed.

@@ -5,7 +5,7 @@ services:
     build: .
     container_name: expense_tracker_dashboard
     ports:
-      - "8501:8501"
+      - "127.0.0.1:8501:8501"  # lokal only — akses via SSH tunnel jika perlu
     volumes:
       - ./data:/app/data
     environment:

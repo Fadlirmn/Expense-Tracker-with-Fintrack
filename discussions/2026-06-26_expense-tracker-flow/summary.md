@@ -2,7 +2,7 @@
 
 **Tanggal:** 2026-06-26  
 **Status:** selesai  
-**Versi:** v11
+**Versi:** v12
 
 ## Konteks
 Analisis alur kode Expense Tracker Agent dan implementasi Dockerization serta integrasi Telegram Bot & FinTrack untuk deploy di home server.
@@ -14,10 +14,10 @@ Analisis alur kode Expense Tracker Agent dan implementasi Dockerization serta in
   - `bot.py` mencocokkan chat ID Telegram ke FinTrack user UUID (`get_user_id_by_chat_id()`) lalu mengirim transaksi (`create_transaction()`) otomatis dengan API Key.
   - `app.py` menyinkronkan pengeluaran dari upload Streamlit jika `DEFAULT_FINTRACK_USER_ID` diset di `.env`.
 - **Dokumentasi & Setup:** Mengupdate `README.md` dengan instruksi instalasi Docker, parameter `.env` baru, dan skema arsitektur integrasi.
-- **Docker Build Fix:** Memperbaiki kegagalan instalasi `libgl1-mesa-glx` pada Debian slim dengan mengganti dependency python ke `opencv-python-headless` (menghapus GUI dependencies) serta mendegradasi library OpenGL ke `libgl1` pada `Dockerfile`.
+- **Kredensial Validation:** Menambahkan pendeteksian dan pesan kesalahan yang ramah pada `bot.py` jika pengguna lupa mengisi variabel kredensial Telegram asli di `.env` (mencegah crash traceback).
 
 ## Tindak Lanjut
-- [ ] User melakukan pembangunan ulang container dengan `docker compose up -d --build`.
+- [ ] User mengonfigurasi API key dan token Telegram asli di berkas `.env` lalu menjalankan kontainer.
 
 ---
 *Dibuat otomatis oleh agent · maks. 200 kata*

@@ -25,6 +25,13 @@ FINTRACK_API_KEY = os.getenv("FINTRACK_API_KEY")
 os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
 os.makedirs(TEMP_DIR, exist_ok=True)
 
+# Check if placeholder is still present
+if ALLOWED_USERS and "USER_ID_" in ALLOWED_USERS:
+    print("⚠️  ALLOWED_TELEGRAM_USER_IDS masih berisi nilai placeholder ('USER_ID_1,USER_ID_2').")
+    print("   Silakan ubah ke ID Telegram asli Anda (berupa angka) di berkas .env.")
+    print("   Untuk sementara, bot akan berjalan tanpa whitelist keamanan (terbuka untuk semua).")
+    ALLOWED_USERS = ""
+
 # Parse whitelist User ID
 allowed_user_ids = []
 if ALLOWED_USERS:
@@ -33,8 +40,10 @@ if ALLOWED_USERS:
     except ValueError:
         print("❌ Gagal mem-parse ALLOWED_TELEGRAM_USER_IDS. Pastikan formatnya adalah angka dipisahkan koma.")
 
-if not TOKEN:
-    print("❌ TELEGRAM_BOT_TOKEN tidak ditemukan di environment variables. Bot tidak dapat dijalankan.")
+# Validasi token
+if not TOKEN or TOKEN == "YOUR_TELEGRAM_BOT_TOKEN_HERE" or ":" not in TOKEN:
+    print("❌ TELEGRAM_BOT_TOKEN belum dikonfigurasi dengan benar di berkas .env.")
+    print("   Silakan dapatkan token dari @BotFather dan masukkan ke dalam berkas .env.")
     exit(1)
 
 bot = telebot.TeleBot(TOKEN)

@@ -1,3 +1,15 @@
+"""
+⚠️  DEPRECATED — bot.py sudah tidak aktif sebagai service Telegram Bot.
+
+Sejak integrasi dengan FinTrack (v13), peran bot Telegram telah dipindahkan ke:
+  - FinTrack bot-gateway (Go) → menangani semua update Telegram
+  - api.py (Flask) → menerima upload gambar struk dari Go dan menjalankan OCR/LLM pipeline
+
+File ini TIDAK boleh dijalankan lagi karena akan menyebabkan konflik 409 Conflict
+dengan FinTrack bot-gateway yang menggunakan token Telegram yang sama.
+
+Disimpan hanya sebagai referensi arsitektur lama.
+"""
 import os
 import json
 import telebot
@@ -9,6 +21,7 @@ from src.ocr_engine import extract_text_from_receipt
 from src.extractor import extract_structured_data
 from src.analysis_engine import run_agent_team
 from src.fintrack_client import get_user_id_by_chat_id, create_transaction
+from src.config import TEMP_DIR, DATA_FILE, build_description
 
 # Muat environment variables
 load_dotenv()

@@ -2,78 +2,42 @@ import streamlit as st
 import pandas as pd
 import json
 import os
-import shutil
-from datetime import datetime
+from dotenv import load_dotenv
 
-# Import your existing modules
+# Import modules — gunakan shared modules (FIX REDUN-02, 03, 04)
+from src.config import DATA_FILE, TEMP_DIR, build_description
+from src.data_store import save_expense, load_expenses
 from src.ocr_engine import extract_text_from_receipt
 from src.extractor import extract_structured_data
 from src.analysis_engine import run_agent_team
 from src.fintrack_client import create_transaction
 
-# --- CONFIGURATION ---
-DATA_FILE = os.getenv("DATA_FILE", os.path.join("data", "expenses_log.json"))
-TEMP_DIR = os.path.join("data", "temp_uploads")
-FINTRACK_API_URL = os.getenv("FINTRACK_API_URL")
-FINTRACK_API_KEY = os.getenv("FINTRACK_API_KEY")
+load_dotenv()
+
+# Konfigurasi FinTrack (dibaca fresh, bukan di module level)
 DEFAULT_FINTRACK_USER_ID = os.getenv("DEFAULT_FINTRACK_USER_ID")
 
-# Ensure temp directory exists
-if not os.path.exists(TEMP_DIR):
-    os.makedirs(TEMP_DIR)
+# Pastikan direktori temp ada
+os.makedirs(TEMP_DIR, exist_ok=True)
 
 st.set_page_config(page_title="AI Expense Tracker", page_icon="💰", layout="wide")
 
-# --- HELPER FUNCTIONS ---
-def load_data():
-    """Loads the JSON database into a Pandas DataFrame."""
-    if not os.path.exists(DATA_FILE):
-        return pd.DataFrame()
-    
-    try:
-        with open(DATA_FILE, "r") as f:
-            data = json.load(f)
-        if not data:
-            return pd.DataFrame()
-        return pd.DataFrame(data)
-    except json.JSONDecodeError:
-        return pd.DataFrame()
 
-def save_expense(receipt_data, analysis_text):
-    """Saves a processed receipt to the JSON file."""
-    new_entry = receipt_data.dict()
-    new_entry['ai_analysis'] = analysis_text
-    new_entry['scanned_at'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Load existing
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r") as f:
-            try:
-                history = json.load(f)
-            except:
-                history = []
-    else:
-        history = []
+def save_and_sync(receipt_data, analysis_text: str) -> None:
+    """Simpan struk ke JSON lokal dan sinkronisasi ke FinTrack jika dikonfigurasi."""
+    # Gunakan shared save_expense dari data_store (FIX REDUN-02)
+    save_expense(receipt_data, analysis_text)
 
-    history.append(new_entry)
-
-    with open(DATA_FILE, "w") as f:
-        json.dump(history, f, indent=4)
-
-    # Sync to FinTrack if configured
-    if FINTRACK_API_URL and FINTRACK_API_KEY and DEFAULT_FINTRACK_USER_ID:
-        description = f"Scan Struk (Web): {receipt_data.merchant}"
-        if receipt_data.items:
-            items_summary = ", ".join([item.name for item in receipt_data.items])
-            if len(items_summary) > 60:
-                items_summary = items_summary[:57] + "..."
-            description += f" ({items_summary})"
-
+    # Sync ke FinTrack jika DEFAULT_FINTRACK_USER_ID tersedia
+    if DEFAULT_FINTRACK_USER_ID:
+        # Gunakan shared build_description (FIX REDUN-01)
+        description = build_description(receipt_data.merchant, receipt_data.items, prefix="Scan Struk (Web)")
         success, err = create_transaction(
             user_id=DEFAULT_FINTRACK_USER_ID,
             category=receipt_data.category,
             amount=receipt_data.total,
-            description=description
+            description=description,
         )
         if success:
             print("✅ Sinkronisasi FinTrack dari Web berhasil.")
@@ -90,7 +54,10 @@ tab1, tab2 = st.tabs(["📊 Dashboard", "📸 Scan Receipts"])
 # TAB 1: DASHBOARD
 # ==========================
 with tab1:
-    df = load_data()
+    # Gunakan load_expenses dari data_store (FIX REDUN-02)
+    import pandas as pd
+    raw_data = load_expenses()
+    df = pd.DataFrame(raw_data) if raw_data else pd.DataFrame()
 
     if df.empty:
         st.info("No expenses logged yet. Go to the 'Scan Receipts' tab to get started!")
@@ -165,10 +132,10 @@ with tab2:
                         if structured_data:
                             # C. AI Analysis
                             ai_analysis = run_agent_team(structured_data)
-                            
-                            # D. Save
-                            save_expense(structured_data, ai_analysis)
-                            
+
+                            # D. Save & Sync (FIX REDUN-02: gunakan save_and_sync)
+                            save_and_sync(structured_data, ai_analysis)
+
                             # E. Show Result
                             st.success(f"Processed: {structured_data.merchant} (${structured_data.total})")
                             with st.expander("💬 Read Agent's Insight", expanded=True):

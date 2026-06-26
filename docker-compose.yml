@@ -18,19 +18,17 @@ services:
       - fintrack-net
     restart: unless-stopped
 
-  telegram-bot:
+  expense-tracker-api:
     build: .
-    container_name: expense_tracker_bot
-    command: python bot.py
+    container_name: expense-tracker-api
+    command: python api.py
+    ports:
+      - "127.0.0.1:8000:8000"
     volumes:
       - ./data:/app/data
     environment:
       - GROQ_API_KEY=${GROQ_API_KEY}
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - ALLOWED_TELEGRAM_USER_IDS=${ALLOWED_TELEGRAM_USER_IDS}
-      - DATA_FILE=data/expenses_log.json
-      - FINTRACK_API_URL=${FINTRACK_API_URL}
-      - FINTRACK_API_KEY=${FINTRACK_API_KEY}
+      - PORT=8000
     networks:
       - fintrack-net
     restart: unless-stopped

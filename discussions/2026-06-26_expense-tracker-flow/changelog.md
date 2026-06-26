@@ -14,3 +14,4 @@
 | 2026-06-26 | v10 | Pengecekan dan sinkronisasi push pada repositori FinTrack (`Fadlirmn/Fintrack.git`) |
 | 2026-06-26 | v11 | Perbaikan kegagalan pembangunan image Docker akibat hilangnya package libgl1-mesa-glx dengan menggunakan opencv-python-headless and libgl1 |
 | 2026-06-26 | v12 | Penambahan validasi deteksi placeholder kredensial di bot.py untuk memberikan pesan error yang informatif |
+| 2026-06-26 | v13 | Penyatuan Telegram Bot dengan FinTrack, penambahan api.py, penyelarasan docker-compose, dan webhook handler Go |

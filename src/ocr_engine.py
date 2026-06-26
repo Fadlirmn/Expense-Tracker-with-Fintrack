@@ -1,10 +1,11 @@
+import sys
 import cv2
 import pytesseract
 
 # --- CONFIGURATION (WINDOWS ONLY) ---
 # If you are on Windows, you must tell Python where Tesseract is installed.
-# If you are on Mac/Linux, DELETE this line.
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+if sys.platform.startswith('win'):
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 def preprocess_image(image_path):
     """

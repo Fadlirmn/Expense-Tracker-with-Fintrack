@@ -1,1 +1,7 @@
 .env
+__pycache__/
+*.pyc
+venv/
+data/expenses_log.json
+data/temp_uploads/
+processed_receipt.jpg

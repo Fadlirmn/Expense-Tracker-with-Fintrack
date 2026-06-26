@@ -9,10 +9,14 @@ from datetime import datetime
 from src.ocr_engine import extract_text_from_receipt
 from src.extractor import extract_structured_data
 from src.analysis_engine import run_agent_team
+from src.fintrack_client import create_transaction
 
 # --- CONFIGURATION ---
-DATA_FILE = "expenses_log.json"
-TEMP_DIR = "temp_uploads"
+DATA_FILE = os.getenv("DATA_FILE", os.path.join("data", "expenses_log.json"))
+TEMP_DIR = os.path.join("data", "temp_uploads")
+FINTRACK_API_URL = os.getenv("FINTRACK_API_URL")
+FINTRACK_API_KEY = os.getenv("FINTRACK_API_KEY")
+DEFAULT_FINTRACK_USER_ID = os.getenv("DEFAULT_FINTRACK_USER_ID")
 
 # Ensure temp directory exists
 if not os.path.exists(TEMP_DIR):
@@ -55,6 +59,26 @@ def save_expense(receipt_data, analysis_text):
 
     with open(DATA_FILE, "w") as f:
         json.dump(history, f, indent=4)
+
+    # Sync to FinTrack if configured
+    if FINTRACK_API_URL and FINTRACK_API_KEY and DEFAULT_FINTRACK_USER_ID:
+        description = f"Scan Struk (Web): {receipt_data.merchant}"
+        if receipt_data.items:
+            items_summary = ", ".join([item.name for item in receipt_data.items])
+            if len(items_summary) > 60:
+                items_summary = items_summary[:57] + "..."
+            description += f" ({items_summary})"
+
+        success, err = create_transaction(
+            user_id=DEFAULT_FINTRACK_USER_ID,
+            category=receipt_data.category,
+            amount=receipt_data.total,
+            description=description
+        )
+        if success:
+            print("✅ Sinkronisasi FinTrack dari Web berhasil.")
+        else:
+            print(f"⚠️ Gagal sinkronisasi FinTrack dari Web: {err}")
 
 # --- UI LAYOUT ---
 st.title("💰 AI Expense Tracker Agent")

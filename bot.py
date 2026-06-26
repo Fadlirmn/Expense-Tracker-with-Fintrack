@@ -32,7 +32,7 @@ ALLOWED_USERS = os.getenv("ALLOWED_TELEGRAM_USER_IDS", "")
 DATA_FILE = os.getenv("DATA_FILE", os.path.join("data", "expenses_log.json"))
 TEMP_DIR = os.path.join("data", "temp_uploads")
 FINTRACK_API_URL = os.getenv("FINTRACK_API_URL")
-FINTRACK_API_KEY = os.getenv("FINTRACK_API_KEY")
+FINTRACK_API_KEY = os.getenv("GATEWAY_API_KEY")
 
 # Pastikan folder ada
 os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)

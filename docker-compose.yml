@@ -12,7 +12,7 @@ services:
       - GROQ_API_KEY=${GROQ_API_KEY}
       - DATA_FILE=data/expenses_log.json
       - FINTRACK_API_URL=${FINTRACK_API_URL}
-      - FINTRACK_API_KEY=${FINTRACK_API_KEY}
+      - GATEWAY_API_KEY=${GATEWAY_API_KEY}
       - DEFAULT_FINTRACK_USER_ID=${DEFAULT_FINTRACK_USER_ID}
     networks:
       - fintrack-net

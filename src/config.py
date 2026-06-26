@@ -16,8 +16,8 @@ DEBUG     = os.getenv("DEBUG", "false").lower() == "true"
 # ── FinTrack Integration ───────────────────────────────────────────────────────
 # Dibaca sebagai fungsi agar selalu up-to-date dan aman terhadap urutan import.
 def get_fintrack_config():
-    """Mengembalikan (FINTRACK_API_URL, FINTRACK_API_KEY) yang selalu fresh dari env."""
-    return os.getenv("FINTRACK_API_URL"), os.getenv("FINTRACK_API_KEY")
+    """Mengembalikan (FINTRACK_API_URL, GATEWAY_API_KEY) yang selalu fresh dari env."""
+    return os.getenv("FINTRACK_API_URL"), os.getenv("GATEWAY_API_KEY")
 
 # ── Upload Constraints ─────────────────────────────────────────────────────────
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB limit untuk upload gambar struk

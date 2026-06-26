@@ -14,8 +14,8 @@ def _get_base_url() -> str:
 
 
 def _get_api_key() -> str:
-    """Mengembalikan API key FinTrack dari env (dibaca fresh tiap panggilan)."""
-    return os.getenv("FINTRACK_API_KEY", "")
+    """Mengembalikan GATEWAY_API_KEY dari env (dibaca fresh tiap panggilan)."""
+    return os.getenv("GATEWAY_API_KEY", "")
 
 
 def _get_headers() -> dict:

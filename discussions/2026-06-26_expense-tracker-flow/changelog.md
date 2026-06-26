@@ -16,3 +16,4 @@
 | 2026-06-26 | v12 | Penambahan validasi deteksi placeholder kredensial di bot.py untuk memberikan pesan error yang informatif |
 | 2026-06-26 | v13 | Penyatuan Telegram Bot dengan FinTrack, penambahan api.py, penyelarasan docker-compose, dan webhook handler Go |
 | 2026-06-26 | v14 | Pembaruan panduan bot Telegram dengan petunjuk penggunaan fitur scan struk foto (OCR/LLM) |
+| 2026-06-26 | v15 | Penambahan tombol inline Buka Dashboard (fintrack.home-sumbul.my.id) dan konfigurasi CORS whitelisting |

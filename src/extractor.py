@@ -23,12 +23,12 @@ class ReceiptItem(BaseModel):
 
 
 class ReceiptData(BaseModel):
-    merchant: str              = Field(description="Name of the store or merchant")
-    date:     str              = Field(description="Date of transaction in YYYY-MM-DD format.")
-    total:    float            = Field(description="The final total amount paid")
-    currency: str              = Field(description="Currency code (USD, EUR, IDR, etc.)")
-    category: str              = Field(description="Category (Groceries, Transport, Dining, Utilities)")
-    items:    List[ReceiptItem] = Field(description="List of line items")
+    merchant: str                    = Field(description="Name of the store or merchant", default="Unknown")
+    date:     Optional[str]          = Field(description="Date of transaction in YYYY-MM-DD format. Use 'Unknown' if not found.", default="Unknown")
+    total:    Optional[float]        = Field(description="The final total amount paid. Use 0 if not found.", default=0.0)
+    currency: Optional[str]          = Field(description="Currency code (IDR, USD, EUR, etc.). Use 'IDR' if not found.", default="IDR")
+    category: Optional[str]          = Field(description="Category: Groceries, Transport, Dining, Electronics, Utilities, or Other.", default="Other")
+    items:    List[ReceiptItem]      = Field(description="List of line items", default_factory=list)
 
 
 # ── FIX INEFF-02: LLM, parser, prompt, dan chain dibuat sekali di module level ──
@@ -43,15 +43,21 @@ _parser = PydanticOutputParser(pydantic_object=ReceiptData)
 
 _prompt = PromptTemplate(
     template="""
-You are an expert receipt assistant. Extract information from the following OCR text.
+You are an expert receipt/invoice data extractor. Extract structured data from this OCR text.
 
 OCR TEXT:
 {text}
 
 INSTRUCTIONS:
-1. Fix OCR errors (e.g., 'S' instead of '5').
-2. Extract merchant, date, total, and items.
-3. Return ONLY the JSON object.
+1. Fix common OCR errors (e.g., 'S' vs '5', 'O' vs '0', 'l' vs '1').
+2. Extract all available fields. For missing fields, use these defaults:
+   - date: "Unknown"
+   - total: 0
+   - currency: "IDR"
+   - category: "Other"
+   - merchant: "Unknown"
+3. If the text does NOT look like a receipt (e.g., it's a photo watermark, random text, or camera info), still return valid JSON with all defaults.
+4. Return ONLY valid JSON, no explanation.
 
 {format_instructions}
 """,

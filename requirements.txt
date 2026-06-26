@@ -1,5 +1,5 @@
 pytesseract
-opencv-python
+opencv-python-headless
 pillow
 langchain 
 langchain-groq 

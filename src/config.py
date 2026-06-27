@@ -19,6 +19,16 @@ def get_fintrack_config():
     """Mengembalikan (FINTRACK_API_URL, GATEWAY_API_KEY) yang selalu fresh dari env."""
     return os.getenv("FINTRACK_API_URL"), os.getenv("GATEWAY_API_KEY")
 
+# ── Ollama & Ryzen Integration ────────────────────────────────────────────────
+def get_ollama_config():
+    """Mengembalikan konfigurasi Ollama dan Ryzen."""
+    return {
+        "api_url": os.getenv("OLLAMA_API_URL", "http://localhost:11435"),
+        "model": os.getenv("OLLAMA_MODEL", "llama3.1:latest"),
+        "ryzen_ip": os.getenv("RYZEN_IP", "192.168.100.22"),
+        "ryzen_mac": os.getenv("RYZEN_MAC", "9c:6b:00:07:66:cd")
+    }
+
 # ── Upload Constraints ─────────────────────────────────────────────────────────
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB limit untuk upload gambar struk
 

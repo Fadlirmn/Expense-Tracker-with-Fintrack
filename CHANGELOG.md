@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- `Dockerfile` (Why: Added `tesseract-ocr-ind` package to fix missing Indonesian language pack and enable unbuffered python stdout log).
+
 ### Added
 - `src/wol.py` (Why: Wakes the remote Ryzen Ollama server using UDP broadcast Wake-on-LAN packets).
 - `api.py` (Why: Exposes a Flask REST API on port 8000 for receipt scanning, allowing the FinTrack Telegram bot gateway to query OCR & LLM parsing internally).
